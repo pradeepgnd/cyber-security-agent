@@ -107,6 +107,23 @@ pytest tests/test_parse_json.py tests/test_tools.py tests/test_routing_policy.py
 The live-enrichment tests never touch the network (`tests/conftest.py` blocks it and
 redirects the cache to a tmp dir).
 
+## Deploy on Render
+
+The app is a long-running Streamlit process. Render is configured via [`render.yaml`](render.yaml) (Starter plan + 1 GB disk at `/data` so Chroma and the run cache survive deploys).
+
+1. Push this repo to GitHub and open [Render Blueprints](https://dashboard.render.com/blueprints).
+2. Connect the GitHub repo. Render prompts for `OPENROUTER_API_KEY` and `OPENROUTER_MODEL` — paste the same values as local `.env`. Do not commit `.env`.
+3. First boot runs `scripts/start.sh`, which builds the knowledge base if `/data/chroma` is empty, then binds Streamlit to `$PORT`.
+4. Later deploys skip ingest. Re-demos hit the disk run cache.
+
+Free-tier web services cannot attach a disk and spin down when idle — every wake rebuilds Chroma. Starter is the demo-safe plan. If a live run is killed with OOM, bump the instance to Standard (2 GB).
+
+```bash
+# after the service exists, refresh secrets from local .env (never print them)
+render env set OPENROUTER_API_KEY --value "$OPENROUTER_API_KEY"
+```
+
 ## Layout
 
 See `PLAN.md` for architecture and the locked decisions. Application code lives in `src/`, the corpus in `data/kb` and `data/scenarios`, the Streamlit entrypoint is `app.py`.
+

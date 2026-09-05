@@ -1,0 +1,48 @@
+# Render Blueprint — https://render.com/docs/blueprint-spec
+# Secrets (OPENROUTER_API_KEY, OPENROUTER_MODEL) are set in the dashboard
+# or via the Render CLI from local .env — never committed.
+services:
+  - type: web
+    name: cyber-security-agent
+    runtime: python
+    plan: starter
+    buildCommand: pip install -r requirements.txt
+    startCommand: bash scripts/start.sh
+    healthCheckPath: /_stcore/health
+    disk:
+      name: soc-data
+      mountPath: /data
+      sizeGB: 1
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.14"
+      - key: CACHE_MODE
+        value: frozen
+      - key: CHROMA_DIR
+        value: /data/chroma
+      - key: CACHE_DIR
+        value: /data/cache
+      - key: XDG_CACHE_HOME
+        value: /data/.cache
+      - key: USE_NATIVE_STRUCTURED_OUTPUT
+        value: "false"
+      - key: SUPERVISOR_MAX_ITERATIONS
+        value: "8"
+      - key: SUPERVISOR_MAX_VISITS_PER_AGENT
+        value: "1"
+      - key: SUPERVISOR_ABSOLUTE_MAX
+        value: "12"
+      - key: CACHE_TTL_DEFAULT
+        value: "86400"
+      - key: CACHE_TTL_KEV
+        value: "21600"
+      - key: CACHE_TTL_NEGATIVE
+        value: "3600"
+      - key: LANGSMITH_TRACING
+        value: "false"
+      - key: LANGSMITH_PROJECT
+        value: cyber-security-agent
+      - key: OPENROUTER_API_KEY
+        sync: false
+      - key: OPENROUTER_MODEL
+        sync: false

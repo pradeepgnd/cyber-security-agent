@@ -13,9 +13,9 @@ load_dotenv(ROOT / ".env")
 
 DATA_DIR = ROOT / "data"
 KB_DIR = DATA_DIR / "kb"
-CHROMA_DIR = DATA_DIR / "chroma"
+CHROMA_DIR = Path(os.getenv("CHROMA_DIR", str(DATA_DIR / "chroma")))
 SCENARIOS_DIR = DATA_DIR / "scenarios"
-CACHE_DIR = DATA_DIR / "cache"
+CACHE_DIR = Path(os.getenv("CACHE_DIR", str(DATA_DIR / "cache")))
 
 # --- Phase 2: live threat-intel enrichment -------------------------------------
 
