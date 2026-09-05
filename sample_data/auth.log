@@ -1,0 +1,16 @@
+2026-09-01T02:14:01 host sshd[1122]: Failed password for invalid user admin from 203.0.113.44 port 51122 ssh2
+2026-09-01T02:14:03 host sshd[1123]: Failed password for invalid user admin from 203.0.113.44 port 51130 ssh2
+2026-09-01T02:14:05 host sshd[1124]: Failed password for root from 203.0.113.44 port 51140 ssh2
+2026-09-01T02:14:07 host sshd[1125]: Failed password for root from 203.0.113.44 port 51151 ssh2
+2026-09-01T02:14:09 host sshd[1126]: Failed password for invalid user test from 203.0.113.44 port 51162 ssh2
+2026-09-01T02:14:11 host sshd[1127]: Failed password for invalid user test from 203.0.113.44 port 51170 ssh2
+2026-09-01T02:14:13 host sshd[1128]: Failed password for invalid user oracle from 203.0.113.44 port 51181 ssh2
+2026-09-01T02:14:15 host sshd[1129]: Failed password for invalid user oracle from 203.0.113.44 port 51192 ssh2
+2026-09-01T02:14:18 host sshd[1130]: Accepted password for admin from 203.0.113.44 port 51201 ssh2
+2026-09-01T02:14:18 host sshd[1130]: pam_unix(sshd:session): session opened for user admin
+2026-09-01T09:02:44 host sshd[2044]: Accepted publickey for deploy from 198.51.100.10 port 60321 ssh2
+2026-09-01T09:02:44 host sshd[2044]: pam_unix(sshd:session): session opened for user deploy
+2026-09-01T14:30:07 host sudo: deploy : TTY=pts/0 ; PWD=/home/deploy ; USER=root ; COMMAND=/usr/bin/systemctl restart webapp
+2026-09-01T18:47:52 host sshd[3310]: Failed password for invalid user postgres from 198.51.100.77 port 41005 ssh2
+2026-09-01T18:47:55 host sshd[3311]: Failed password for invalid user postgres from 198.51.100.77 port 41012 ssh2
+2026-09-01T18:47:58 host sshd[3312]: Connection closed by 198.51.100.77 port 41020 [preauth]

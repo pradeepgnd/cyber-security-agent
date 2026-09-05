@@ -1,0 +1,360 @@
+{
+  "fetched_at": "2026-09-05T18:15:49+00:00",
+  "key": "PyPI:requests@2.28.1",
+  "payload": [
+    {
+      "cve_id": "CVE-2024-47081",
+      "data": {
+        "affected": [
+          {
+            "package": "requests",
+            "ranges": [
+              {
+                "events": [
+                  {
+                    "introduced": "0"
+                  },
+                  {
+                    "fixed": "2.32.4"
+                  }
+                ],
+                "type": "ECOSYSTEM"
+              }
+            ]
+          }
+        ],
+        "aliases": [
+          "CVE-2024-47081",
+          "PYSEC-2026-1872"
+        ]
+      },
+      "id": "osv:GHSA-9hjg-9r4m-mvj7",
+      "kind": "advisory",
+      "refs": [
+        "https://github.com/psf/requests/security/advisories/GHSA-9hjg-9r4m-mvj7",
+        "https://nvd.nist.gov/vuln/detail/CVE-2024-47081",
+        "https://github.com/psf/requests/pull/6965",
+        "https://github.com/psf/requests/commit/96ba401c1296ab1dda74a2365ef36d88f7d144ef",
+        "https://github.com/psf/requests",
+        "https://requests.readthedocs.io/en/latest/api/#requests.Session.trust_env",
+        "https://seclists.org/fulldisclosure/2025/Jun/2",
+        "http://seclists.org/fulldisclosure/2025/Jun/2"
+      ],
+      "severity": "CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:U/C:H/I:N/A:N",
+      "source": "osv",
+      "summary": "Requests vulnerable to .netrc credentials leak via malicious URLs\n### Impact\n\nDue to a URL parsing issue, Requests releases prior to 2.32.4 may leak .netrc credentials to third parties for specific maliciously-crafted URLs.\n\n### Workarounds\nFor older versions of Requests, use of the .netrc file can be disabled with `trust_env=False` on your Requests Session ([docs](https://requests.readthedocs.io/en/latest/api/#requests.Session.trust_env)).\n\n### References\nhttps",
+      "title": "GHSA-9hjg-9r4m-mvj7 \u2014 OSV advisory",
+      "url": "https://osv.dev/vulnerability/GHSA-9hjg-9r4m-mvj7"
+    },
+    {
+      "cve_id": "CVE-2024-35195",
+      "data": {
+        "affected": [
+          {
+            "package": "requests",
+            "ranges": [
+              {
+                "events": [
+                  {
+                    "introduced": "0"
+                  },
+                  {
+                    "fixed": "2.32.0"
+                  }
+                ],
+                "type": "ECOSYSTEM"
+              }
+            ]
+          }
+        ],
+        "aliases": [
+          "CVE-2024-35195",
+          "PYSEC-2026-1873"
+        ]
+      },
+      "id": "osv:GHSA-9wx4-h78v-vm56",
+      "kind": "advisory",
+      "refs": [
+        "https://github.com/psf/requests/security/advisories/GHSA-9wx4-h78v-vm56",
+        "https://nvd.nist.gov/vuln/detail/CVE-2024-35195",
+        "https://github.com/psf/requests/pull/6655",
+        "https://github.com/psf/requests/commit/a58d7f2ffb4d00b46dca2d70a3932a0b37e22fac",
+        "https://github.com/psf/requests",
+        "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/IYLSNK5TL46Q6XPRVMHVWS63MVJQOK4Q",
+        "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/N7WP6EYDSUOCOJYHDK5NX43PYZ4SNHGZ"
+      ],
+      "severity": "CVSS:3.1/AV:L/AC:H/PR:H/UI:R/S:U/C:H/I:H/A:N",
+      "source": "osv",
+      "summary": "Requests `Session` object does not verify requests after making first request with verify=False\nWhen using a `requests.Session`, if the first request to a given origin is made with `verify=False`, TLS certificate verification may remain disabled for all subsequent requests to that origin, even if `verify=True` is explicitly specified later.\n\nThis occurs because the underlying connection is reused from the session's connection pool, causing the initial TLS verification setting to persist for ",
+      "title": "GHSA-9wx4-h78v-vm56 \u2014 OSV advisory",
+      "url": "https://osv.dev/vulnerability/GHSA-9wx4-h78v-vm56"
+    },
+    {
+      "cve_id": "CVE-2026-25645",
+      "data": {
+        "affected": [
+          {
+            "package": "requests",
+            "ranges": [
+              {
+                "events": [
+                  {
+                    "introduced": "0"
+                  },
+                  {
+                    "fixed": "2.33.0"
+                  }
+                ],
+                "type": "ECOSYSTEM"
+              }
+            ]
+          }
+        ],
+        "aliases": [
+          "CVE-2026-25645",
+          "PYSEC-2026-2275"
+        ]
+      },
+      "id": "osv:GHSA-gc5v-m9x4-r6x2",
+      "kind": "advisory",
+      "refs": [
+        "https://github.com/psf/requests/security/advisories/GHSA-gc5v-m9x4-r6x2",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-25645",
+        "https://github.com/psf/requests/commit/66d21cb07bd6255b1280291c4fafb71803cdb3b7",
+        "https://github.com/psf/requests",
+        "https://github.com/psf/requests/releases/tag/v2.33.0"
+      ],
+      "severity": "CVSS:3.1/AV:L/AC:H/PR:L/UI:R/S:U/C:N/I:H/A:N",
+      "source": "osv",
+      "summary": "Requests has Insecure Temp File Reuse in its extract_zipped_paths() utility function\n### Impact\nThe `requests.utils.extract_zipped_paths()` utility function uses a predictable filename when extracting files from zip archives into the system temporary directory. If the target file already exists, it is reused without validation. A local attacker with write access to the temp directory could pre-create a malicious file that would be loaded in place of the legitimate one.\n\n### Affect",
+      "title": "GHSA-gc5v-m9x4-r6x2 \u2014 OSV advisory",
+      "url": "https://osv.dev/vulnerability/GHSA-gc5v-m9x4-r6x2"
+    },
+    {
+      "cve_id": "CVE-2023-32681",
+      "data": {
+        "affected": [
+          {
+            "package": "requests",
+            "ranges": [
+              {
+                "events": [
+                  {
+                    "introduced": "2.3.0"
+                  },
+                  {
+                    "fixed": "2.31.0"
+                  }
+                ],
+                "type": "ECOSYSTEM"
+              }
+            ]
+          }
+        ],
+        "aliases": [
+          "CVE-2023-32681",
+          "PYSEC-2023-74"
+        ]
+      },
+      "id": "osv:GHSA-j8r2-6x86-q33q",
+      "kind": "advisory",
+      "refs": [
+        "https://github.com/psf/requests/security/advisories/GHSA-j8r2-6x86-q33q",
+        "https://nvd.nist.gov/vuln/detail/CVE-2023-32681",
+        "https://github.com/psf/requests/commit/74ea7cf7a6a27a4eeb2ae24e162bcc942a6706d5",
+        "https://github.com/psf/requests",
+        "https://github.com/psf/requests/releases/tag/v2.31.0",
+        "https://github.com/pypa/advisory-database/tree/main/vulns/requests/PYSEC-2023-74.yaml",
+        "https://lists.debian.org/debian-lts-announce/2023/06/msg00018.html",
+        "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/AW7HNFGYP44RT3DUDQXG2QT3OEV2PJ7Y"
+      ],
+      "severity": "CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:C/C:H/I:N/A:N",
+      "source": "osv",
+      "summary": "Unintended leak of Proxy-Authorization header in requests\n### Impact\n\nSince Requests v2.3.0, Requests has been vulnerable to potentially leaking `Proxy-Authorization` headers to destination servers, specifically during redirects to an HTTPS origin. This is a product of how `rebuild_proxies` is used to recompute and [reattach the `Proxy-Authorization` header](https://github.com/psf/requests/blob/f2629e9e3c7ce3c3c8c025bcd8db551101cbc773/requests/sessions.p",
+      "title": "GHSA-j8r2-6x86-q33q \u2014 OSV advisory",
+      "url": "https://osv.dev/vulnerability/GHSA-j8r2-6x86-q33q"
+    },
+    {
+      "cve_id": "CVE-2023-32681",
+      "data": {
+        "affected": [
+          {
+            "package": "requests",
+            "ranges": [
+              {
+                "events": [
+                  {
+                    "introduced": "0"
+                  },
+                  {
+                    "fixed": "74ea7cf7a6a27a4eeb2ae24e162bcc942a6706d5"
+                  }
+                ],
+                "repo": "https://github.com/psf/requests",
+                "type": "GIT"
+              },
+              {
+                "events": [
+                  {
+                    "introduced": "2.3.0"
+                  },
+                  {
+                    "fixed": "2.31.0"
+                  }
+                ],
+                "type": "ECOSYSTEM"
+              }
+            ]
+          }
+        ],
+        "aliases": [
+          "CVE-2023-32681",
+          "GHSA-j8r2-6x86-q33q"
+        ]
+      },
+      "id": "osv:PYSEC-2023-74",
+      "kind": "advisory",
+      "refs": [
+        "https://github.com/psf/requests/security/advisories/GHSA-j8r2-6x86-q33q",
+        "https://github.com/psf/requests/releases/tag/v2.31.0",
+        "https://github.com/psf/requests/commit/74ea7cf7a6a27a4eeb2ae24e162bcc942a6706d5",
+        "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/AW7HNFGYP44RT3DUDQXG2QT3OEV2PJ7Y/"
+      ],
+      "severity": "",
+      "source": "osv",
+      "summary": "Requests is a HTTP library. Since Requests 2.3.0, Requests has been leaking Proxy-Authorization headers to destination servers when redirected to an HTTPS endpoint. This is a product of how we use `rebuild_proxies` to reattach the `Proxy-Authorization` header to requests. For HTTP connections sent through the tunnel, the proxy will identify the header in the request itself and remove it prior to forwarding to the destination server. However when sent over HTTPS, the `Proxy-Authorization` header must be sent in the CONNECT request as the proxy has no visibility into the tunneled request. This r",
+      "title": "PYSEC-2023-74 \u2014 OSV advisory",
+      "url": "https://osv.dev/vulnerability/PYSEC-2023-74"
+    },
+    {
+      "cve_id": "CVE-2024-47081",
+      "data": {
+        "affected": [
+          {
+            "package": "requests",
+            "ranges": [
+              {
+                "events": [
+                  {
+                    "introduced": "0"
+                  },
+                  {
+                    "fixed": "2.32.4"
+                  }
+                ],
+                "type": "ECOSYSTEM"
+              }
+            ]
+          }
+        ],
+        "aliases": [
+          "CVE-2024-47081",
+          "GHSA-9hjg-9r4m-mvj7"
+        ]
+      },
+      "id": "osv:PYSEC-2026-1872",
+      "kind": "advisory",
+      "refs": [
+        "https://github.com/psf/requests/security/advisories/GHSA-9hjg-9r4m-mvj7",
+        "https://nvd.nist.gov/vuln/detail/CVE-2024-47081",
+        "https://github.com/psf/requests/pull/6965",
+        "https://github.com/psf/requests/commit/96ba401c1296ab1dda74a2365ef36d88f7d144ef",
+        "https://github.com/psf/requests",
+        "https://requests.readthedocs.io/en/latest/api/#requests.Session.trust_env",
+        "https://seclists.org/fulldisclosure/2025/Jun/2",
+        "http://seclists.org/fulldisclosure/2025/Jun/2"
+      ],
+      "severity": "CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:U/C:H/I:N/A:N",
+      "source": "osv",
+      "summary": "Requests vulnerable to .netrc credentials leak via malicious URLs\n### Impact\n\nDue to a URL parsing issue, Requests releases prior to 2.32.4 may leak .netrc credentials to third parties for specific maliciously-crafted URLs.\n\n### Workarounds\nFor older versions of Requests, use of the .netrc file can be disabled with `trust_env=False` on your Requests Session ([docs](https://requests.readthedocs.io/en/latest/api/#requests.Session.trust_env)).\n\n### References\nhttps",
+      "title": "PYSEC-2026-1872 \u2014 OSV advisory",
+      "url": "https://osv.dev/vulnerability/PYSEC-2026-1872"
+    },
+    {
+      "cve_id": "CVE-2024-35195",
+      "data": {
+        "affected": [
+          {
+            "package": "requests",
+            "ranges": [
+              {
+                "events": [
+                  {
+                    "introduced": "0"
+                  },
+                  {
+                    "fixed": "2.32.0"
+                  }
+                ],
+                "type": "ECOSYSTEM"
+              }
+            ]
+          }
+        ],
+        "aliases": [
+          "CVE-2024-35195",
+          "GHSA-9wx4-h78v-vm56"
+        ]
+      },
+      "id": "osv:PYSEC-2026-1873",
+      "kind": "advisory",
+      "refs": [
+        "https://github.com/psf/requests/security/advisories/GHSA-9wx4-h78v-vm56",
+        "https://nvd.nist.gov/vuln/detail/CVE-2024-35195",
+        "https://github.com/psf/requests/pull/6655",
+        "https://github.com/psf/requests/commit/a58d7f2ffb4d00b46dca2d70a3932a0b37e22fac",
+        "https://github.com/psf/requests",
+        "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/IYLSNK5TL46Q6XPRVMHVWS63MVJQOK4Q",
+        "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/N7WP6EYDSUOCOJYHDK5NX43PYZ4SNHGZ",
+        "https://pypi.org/project/requests"
+      ],
+      "severity": "CVSS:3.1/AV:L/AC:H/PR:H/UI:R/S:U/C:H/I:H/A:N",
+      "source": "osv",
+      "summary": "Requests `Session` object does not verify requests after making first request with verify=False\nWhen using a `requests.Session`, if the first request to a given origin is made with `verify=False`, TLS certificate verification may remain disabled for all subsequent requests to that origin, even if `verify=True` is explicitly specified later.\n\nThis occurs because the underlying connection is reused from the session's connection pool, causing the initial TLS verification setting to persist for ",
+      "title": "PYSEC-2026-1873 \u2014 OSV advisory",
+      "url": "https://osv.dev/vulnerability/PYSEC-2026-1873"
+    },
+    {
+      "cve_id": "CVE-2026-25645",
+      "data": {
+        "affected": [
+          {
+            "package": "requests",
+            "ranges": [
+              {
+                "events": [
+                  {
+                    "introduced": "0"
+                  },
+                  {
+                    "fixed": "2.33.0"
+                  }
+                ],
+                "type": "ECOSYSTEM"
+              }
+            ]
+          }
+        ],
+        "aliases": [
+          "CVE-2026-25645",
+          "GHSA-gc5v-m9x4-r6x2"
+        ]
+      },
+      "id": "osv:PYSEC-2026-2275",
+      "kind": "advisory",
+      "refs": [
+        "https://github.com/psf/requests/releases/tag/v2.33.0",
+        "https://github.com/psf/requests/security/advisories/GHSA-gc5v-m9x4-r6x2",
+        "https://github.com/psf/requests/commit/66d21cb07bd6255b1280291c4fafb71803cdb3b7"
+      ],
+      "severity": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:H/A:N",
+      "source": "osv",
+      "summary": "Requests is a HTTP library. Prior to version 2.33.0, the `requests.utils.extract_zipped_paths()` utility function uses a predictable filename when extracting files from zip archives into the system temporary directory. If the target file already exists, it is reused without validation. A local attacker with write access to the temp directory could pre-create a malicious file that would be loaded in place of the legitimate one. Standard usage of the Requests library is not affected by this vulnerability. Only applications that call `extract_zipped_paths()` directly are impacted. Starting in ver",
+      "title": "PYSEC-2026-2275 \u2014 OSV advisory",
+      "url": "https://osv.dev/vulnerability/PYSEC-2026-2275"
+    }
+  ],
+  "source": "osv",
+  "status": "ok",
+  "ttl_seconds": 86400
+}

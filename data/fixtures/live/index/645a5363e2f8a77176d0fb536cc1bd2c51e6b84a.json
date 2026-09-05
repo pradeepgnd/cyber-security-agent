@@ -1,0 +1,42 @@
+{
+  "cve_id": "CVE-2026-27205",
+  "data": {
+    "affected": [
+      {
+        "package": "flask",
+        "ranges": [
+          {
+            "events": [
+              {
+                "introduced": "0"
+              },
+              {
+                "fixed": "3.1.3"
+              }
+            ],
+            "type": "ECOSYSTEM"
+          }
+        ]
+      }
+    ],
+    "aliases": [
+      "CVE-2026-27205",
+      "PYSEC-2026-2151"
+    ]
+  },
+  "fetched_at": "2026-09-05T18:16:34+00:00",
+  "id": "osv:GHSA-68rp-wp8r-4726",
+  "kind": "advisory",
+  "refs": [
+    "https://github.com/pallets/flask/security/advisories/GHSA-68rp-wp8r-4726",
+    "https://nvd.nist.gov/vuln/detail/CVE-2026-27205",
+    "https://github.com/pallets/flask/commit/089cb86dd22bff589a4eafb7ab8e42dc357623b4",
+    "https://github.com/pallets/flask",
+    "https://github.com/pallets/flask/releases/tag/3.1.3"
+  ],
+  "severity": "",
+  "source": "osv",
+  "summary": "Flask session does not add `Vary: Cookie` header when accessed in some ways\nWhen the `session` object is accessed, Flask should set the `Vary: Cookie` header. This instructs caches not to cache the response, as it may contain information specific to a logged in user. This is handled in most cases, but some forms of access such as the Python `in` operator were overlooked.\n\nThe severity depends on the application's use of the session, and the cache's behavior regarding cook",
+  "title": "GHSA-68rp-wp8r-4726 \u2014 OSV advisory",
+  "url": "https://osv.dev/vulnerability/GHSA-68rp-wp8r-4726"
+}

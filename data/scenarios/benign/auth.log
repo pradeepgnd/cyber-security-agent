@@ -1,0 +1,16 @@
+Jan 15 08:01:12 api-prod systemd[1]: Started OpenSSH server daemon.
+Jan 15 08:02:44 api-prod sshd[2044]: Accepted publickey for deploy from 198.51.100.10 port 60321 ssh2
+Jan 15 08:02:44 api-prod sshd[2044]: pam_unix(sshd:session): session opened for user deploy by (uid=0)
+Jan 15 08:15:02 api-prod CRON[2101]: (deploy) CMD (/usr/local/bin/healthcheck.sh)
+Jan 15 09:11:08 api-prod sshd[2201]: Accepted publickey for alice from 10.0.1.20 port 51112 ssh2
+Jan 15 09:11:08 api-prod sshd[2201]: pam_unix(sshd:session): session opened for user alice by (uid=0)
+Jan 15 09:40:19 api-prod sshd[2300]: Failed password for invalid user guest from 203.0.113.88 port 2201 ssh2
+Jan 15 09:40:22 api-prod sshd[2300]: Connection closed by authenticating user guest 203.0.113.88 port 2201 [preauth]
+Jan 15 10:02:01 api-prod systemd[1]: Starting Daily apt download activities...
+Jan 15 10:02:04 api-prod systemd[1]: Finished Daily apt download activities.
+Jan 15 12:00:01 api-prod systemd[1]: Starting logrotate.service...
+Jan 15 12:00:02 api-prod systemd[1]: Finished logrotate.service.
+Jan 15 14:18:33 api-prod sshd[2410]: Accepted publickey for alice from 10.0.1.20 port 51140 ssh2
+Jan 15 16:02:10 api-prod sshd[2044]: Received disconnect from 198.51.100.10 port 60321:11: disconnected by user
+Jan 15 16:02:10 api-prod sshd[2044]: pam_unix(sshd:session): session closed for user deploy
+Jan 15 18:00:00 api-prod CRON[2500]: (root) CMD (/usr/sbin/logrotate /etc/logrotate.conf)

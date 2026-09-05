@@ -1,0 +1,19 @@
+{
+  "cve_id": "CVE-2021-45046",
+  "data": {
+    "date_added": "2023-05-01",
+    "due_date": "2023-05-22",
+    "known_ransomware": "Known",
+    "name": "Apache Log4j2 Deserialization of Untrusted Data Vulnerability",
+    "required_action": "Apply updates per vendor instructions."
+  },
+  "fetched_at": "2026-09-05T18:16:34+00:00",
+  "id": "kev:CVE-2021-45046",
+  "kind": "exploited",
+  "refs": [],
+  "severity": "high",
+  "source": "kev",
+  "summary": "Apache Log4j2 Deserialization of Untrusted Data Vulnerability is in the CISA Known Exploited Vulnerabilities catalog (added 2023-05-01, remediate by 2023-05-22). Required action: Apply updates per vendor instructions.. Known ransomware use: Known.",
+  "title": "CVE-2021-45046 \u2014 CISA KEV (known-exploited)",
+  "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+}

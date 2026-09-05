@@ -1,0 +1,24 @@
+Jan 15 02:11:04 web-prod sshd[1201]: Failed password for valid_user from 10.0.1.20 port 51111 ssh2
+Jan 15 02:11:08 web-prod sshd[1202]: Accepted publickey for alice from 10.0.1.20 port 51112 ssh2
+Jan 15 02:40:19 web-prod sshd[1300]: Failed password for invalid user ghost from 203.0.113.88 port 2201 ssh2
+Jan 15 03:12:00 web-prod sshd[1400]: Failed password for root from 185.220.101.47 port 53100 ssh2
+Jan 15 03:12:01 web-prod sshd[1401]: Failed password for admin from 185.220.101.47 port 53101 ssh2
+Jan 15 03:12:02 web-prod sshd[1402]: Failed password for ubuntu from 185.220.101.47 port 53102 ssh2
+Jan 15 03:12:03 web-prod sshd[1403]: Failed password for root from 185.220.101.47 port 53103 ssh2
+Jan 15 03:12:04 web-prod sshd[1404]: Failed password for root from 185.220.101.47 port 53104 ssh2
+Jan 15 03:12:05 web-prod sshd[1405]: Failed password for admin from 185.220.101.47 port 53105 ssh2
+Jan 15 03:12:06 web-prod sshd[1406]: Failed password for ubuntu from 185.220.101.47 port 53106 ssh2
+Jan 15 03:12:07 web-prod sshd[1407]: Failed password for root from 185.220.101.47 port 53107 ssh2
+Jan 15 03:12:08 web-prod sshd[1408]: Failed password for root from 185.220.101.47 port 53108 ssh2
+Jan 15 03:12:09 web-prod sshd[1409]: Failed password for admin from 185.220.101.47 port 53109 ssh2
+Jan 15 03:12:10 web-prod sshd[1410]: Failed password for ubuntu from 185.220.101.47 port 53110 ssh2
+Jan 15 03:12:11 web-prod sshd[1411]: Failed password for root from 185.220.101.47 port 53111 ssh2
+Jan 15 03:12:12 web-prod sshd[1412]: Failed password for root from 185.220.101.47 port 53112 ssh2
+Jan 15 03:12:13 web-prod sshd[1413]: Failed password for admin from 185.220.101.47 port 53113 ssh2
+Jan 15 03:18:44 web-prod sshd[1890]: Accepted password for ubuntu from 185.220.101.47 port 54001 ssh2
+Jan 15 03:18:45 web-prod systemd-logind[1]: New session 88 of user ubuntu
+Jan 15 03:19:02 web-prod sudo: ubuntu : TTY=pts/0 ; PWD=/home/ubuntu ; USER=root ; COMMAND=/usr/sbin/useradd -m backup-svc
+Jan 15 03:19:03 web-prod useradd[1901]: new user: name=backup-svc, UID=1005, GID=1005, home=/home/backup-svc, shell=/bin/sh
+Jan 15 03:20:11 web-prod sudo: ubuntu : TTY=pts/0 ; PWD=/home/ubuntu ; USER=root ; COMMAND=/usr/bin/ssh backup-svc@10.0.2.15
+Jan 15 03:20:14 db-int sshd[441]: Accepted password for backup-svc from 10.0.1.8 port 22022 ssh2
+Jan 15 04:01:00 web-prod sshd[2002]: Failed password for alice from 10.0.1.20 port 51200 ssh2

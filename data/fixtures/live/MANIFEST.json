@@ -1,0 +1,208 @@
+{
+  "entries": [
+    {
+      "fetched_at": "2026-09-05T18:16:34+00:00",
+      "key": "CVE-2021-44228",
+      "path": "epss\\CVE-2021-44228.json",
+      "source": "epss",
+      "status": "not_found"
+    },
+    {
+      "fetched_at": "2026-09-05T18:16:34+00:00",
+      "key": "CVE-2021-45046",
+      "path": "epss\\CVE-2021-45046.json",
+      "source": "epss",
+      "status": "not_found"
+    },
+    {
+      "fetched_at": "2026-09-05T18:16:34+00:00",
+      "key": "CVE-2021-45105",
+      "path": "epss\\CVE-2021-45105.json",
+      "source": "epss",
+      "status": "not_found"
+    },
+    {
+      "fetched_at": "2026-09-05T18:16:34+00:00",
+      "key": "CVE-2022-42889",
+      "path": "epss\\CVE-2022-42889.json",
+      "source": "epss",
+      "status": "not_found"
+    },
+    {
+      "fetched_at": "2026-09-05T18:16:34+00:00",
+      "key": "",
+      "path": "index\\0a04628e386fa55729c214b8c3dff95bed4b3928.json",
+      "source": "osv",
+      "status": ""
+    },
+    {
+      "fetched_at": "2026-09-05T18:16:34+00:00",
+      "key": "",
+      "path": "index\\1529aae4bb85bb433d25f9733d2584241b1711a3.json",
+      "source": "osv",
+      "status": ""
+    },
+    {
+      "fetched_at": "2026-09-05T18:16:34+00:00",
+      "key": "",
+      "path": "index\\386746b76a150d26508efbc9bcc0acdc1538864a.json",
+      "source": "nvd",
+      "status": ""
+    },
+    {
+      "fetched_at": "2026-09-05T18:16:34+00:00",
+      "key": "",
+      "path": "index\\3dd974293e655de9296ba2f0ab1a719e39ebf546.json",
+      "source": "kev",
+      "status": ""
+    },
+    {
+      "fetched_at": "2026-09-05T18:16:34+00:00",
+      "key": "",
+      "path": "index\\645a5363e2f8a77176d0fb536cc1bd2c51e6b84a.json",
+      "source": "osv",
+      "status": ""
+    },
+    {
+      "fetched_at": "2026-09-05T18:16:34+00:00",
+      "key": "",
+      "path": "index\\67af9ed080aac6e975bd3402194e61b0eade9565.json",
+      "source": "nvd",
+      "status": ""
+    },
+    {
+      "fetched_at": "2026-09-05T18:16:34+00:00",
+      "key": "",
+      "path": "index\\6f3e5ac219123b6877030a1ac1ae44ccbcd840d5.json",
+      "source": "osv",
+      "status": ""
+    },
+    {
+      "fetched_at": "2026-09-05T18:16:34+00:00",
+      "key": "",
+      "path": "index\\716ff9ea4b96de67314793fc8e991fc2a46cdd8c.json",
+      "source": "osv",
+      "status": ""
+    },
+    {
+      "fetched_at": "2026-09-05T18:16:34+00:00",
+      "key": "",
+      "path": "index\\8b6b33119e9434c87eae55d76b5e0fa19bed2310.json",
+      "source": "osv",
+      "status": ""
+    },
+    {
+      "fetched_at": "2026-09-05T18:16:34+00:00",
+      "key": "",
+      "path": "index\\aa75bcb51513bbe47ac7c1c3ed0019fb919cb7b8.json",
+      "source": "kev",
+      "status": ""
+    },
+    {
+      "fetched_at": "2026-09-05T18:16:34+00:00",
+      "key": "",
+      "path": "index\\df8e5b139e344b33fae13e36d9e0dc0191abf528.json",
+      "source": "nvd",
+      "status": ""
+    },
+    {
+      "fetched_at": "2026-09-05T18:16:34+00:00",
+      "key": "",
+      "path": "index\\f5770dfb090e7b1ab5de9c12d5b2f1a49858f711.json",
+      "source": "nvd",
+      "status": ""
+    },
+    {
+      "fetched_at": "2026-09-05T18:16:30+00:00",
+      "key": "catalog",
+      "path": "kev\\catalog.json",
+      "source": "kev",
+      "status": "ok"
+    },
+    {
+      "fetched_at": "2026-09-05T18:16:10+00:00",
+      "key": "CVE-2021-44228",
+      "path": "nvd\\CVE-2021-44228.json",
+      "source": "nvd",
+      "status": "ok"
+    },
+    {
+      "fetched_at": "2026-09-05T18:16:16+00:00",
+      "key": "CVE-2021-45046",
+      "path": "nvd\\CVE-2021-45046.json",
+      "source": "nvd",
+      "status": "ok"
+    },
+    {
+      "fetched_at": "2026-09-05T18:16:23+00:00",
+      "key": "CVE-2021-45105",
+      "path": "nvd\\CVE-2021-45105.json",
+      "source": "nvd",
+      "status": "ok"
+    },
+    {
+      "fetched_at": "2026-09-05T18:16:29+00:00",
+      "key": "CVE-2022-42889",
+      "path": "nvd\\CVE-2022-42889.json",
+      "source": "nvd",
+      "status": "ok"
+    },
+    {
+      "fetched_at": "2026-09-05T18:15:49+00:00",
+      "key": "PyPI:flask@2.2.2",
+      "path": "osv\\032ae5c4c23564019586a6d700218e605d964ab9.json",
+      "source": "osv",
+      "status": "ok"
+    },
+    {
+      "fetched_at": "2026-09-05T18:15:50+00:00",
+      "key": "PyPI:commons-text@1.9",
+      "path": "osv\\08c893b1d43e56fba1698119d60eb7fe1b5982fb.json",
+      "source": "osv",
+      "status": "ok"
+    },
+    {
+      "fetched_at": "2026-09-05T18:15:49+00:00",
+      "key": "PyPI:requests@2.28.1",
+      "path": "osv\\20675325d708b2d6b5d8f151e972aba4d11336b8.json",
+      "source": "osv",
+      "status": "ok"
+    },
+    {
+      "fetched_at": "2026-09-05T18:15:48+00:00",
+      "key": "PyPI:log4j-core@2.14.1",
+      "path": "osv\\4b921d6b91cdaf60af0163b5b7b5fd9226e8a808.json",
+      "source": "osv",
+      "status": "ok"
+    },
+    {
+      "fetched_at": "2026-09-05T18:15:55+00:00",
+      "key": "CVE-2021-44228",
+      "path": "osv\\CVE-2021-44228.json",
+      "source": "osv",
+      "status": "error"
+    },
+    {
+      "fetched_at": "2026-09-05T18:16:00+00:00",
+      "key": "CVE-2021-45046",
+      "path": "osv\\CVE-2021-45046.json",
+      "source": "osv",
+      "status": "error"
+    },
+    {
+      "fetched_at": "2026-09-05T18:16:05+00:00",
+      "key": "CVE-2021-45105",
+      "path": "osv\\CVE-2021-45105.json",
+      "source": "osv",
+      "status": "error"
+    },
+    {
+      "fetched_at": "2026-09-05T18:16:09+00:00",
+      "key": "CVE-2022-42889",
+      "path": "osv\\CVE-2022-42889.json",
+      "source": "osv",
+      "status": "error"
+    }
+  ],
+  "frozen_at": "2026-09-05T18:19:36+00:00"
+}
