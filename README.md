@@ -56,6 +56,34 @@ python run_cli.py --scenario log4shell --check --no-cache
 
 `--check` asserts `meta.json` expected keywords, a non-empty plan, and that every citation id resolves to a real chunk.
 
+## Live threat-intel enrichment (Phase 2)
+
+Threat Intel and Vuln Scanner run a deterministic pre-step that resolves the CVE ids /
+package coordinates they already hold against **OSV, NVD, CISA KEV, and EPSS**, behind a
+JSON file cache with a configurable TTL. Retrieval from the local Chroma KB is unchanged —
+live records are an extra, citeable `Live intel` block (`nvd:CVE-…`, `kev:CVE-…`, …).
+
+`CACHE_MODE` governs whether the sidecar may touch the network:
+
+| Mode | Behaviour |
+|---|---|
+| `frozen` *(default)* | cache + committed `data/fixtures/live/` only, never the network — the demo path |
+| `live` | fetch on miss/expiry, then cache |
+| `swr` | serve stale immediately, refresh in the background |
+| `bypass` | always fetch |
+
+Scenario `meta.json` can override it: `"cache": { "mode": "frozen", "ttl": { "nvd": 3600 } }`.
+
+Before a demo, warm the cache and freeze a snapshot:
+
+```bash
+CACHE_MODE=live python scripts/warm_cache.py --all
+python scripts/freeze_cache.py   # data/cache/live/ -> data/fixtures/live/ + MANIFEST.json
+```
+
+With no cache and no fixtures, `frozen` mode simply skips enrichment — the run still
+completes on the local KB.
+
 ## Configuration
 
 | Env | Role |
@@ -64,12 +92,20 @@ python run_cli.py --scenario log4shell --check --no-cache
 | `LANGSMITH_TRACING` / `LANGSMITH_API_KEY` / `LANGSMITH_PROJECT` | Optional. Unset them and the app is unchanged. |
 | `USE_NATIVE_STRUCTURED_OUTPUT` | Off. Do not enable on the demo path. |
 | `SUPERVISOR_MAX_ITERATIONS` | Default 8, hard-capped at 12. Scenario `meta.json` wins over env. |
+| `CACHE_MODE` | `frozen` (default) / `live` / `swr` / `bypass`. Scenario `meta.json` wins. |
+| `CACHE_TTL_*` / `NVD_API_KEY` | Per-source TTL seconds; optional NVD key raises its rate limit. |
+| `OSV_API_URL` / `NVD_API_URL` / `KEV_FEED_URL` / `EPSS_API_URL` | Source base URLs; override for mirrors / offline. |
 
 ## Tests that do not need a key
 
 ```bash
-pytest tests/test_parse_json.py tests/test_tools.py tests/test_routing_policy.py
+pytest tests/test_parse_json.py tests/test_tools.py tests/test_routing_policy.py \
+       tests/test_live_cache.py tests/test_live_policy.py \
+       tests/test_live_sources.py tests/test_live_enrich.py
 ```
+
+The live-enrichment tests never touch the network (`tests/conftest.py` blocks it and
+redirects the cache to a tmp dir).
 
 ## Layout
 

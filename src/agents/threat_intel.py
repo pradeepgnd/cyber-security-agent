@@ -4,6 +4,7 @@ import re
 import time
 
 from src.agents.common import emit_trace, run_llm_findings
+from src.live.enrich import enrich
 from src.rag.retrievers import format_retrieved, retrieve_many
 from src.state import SecurityState
 
@@ -32,10 +33,14 @@ Prior findings (title + severity):
 Retrieved CVE and ATT&CK context:
 {context}
 
+Live intel (NVD / CISA KEV / EPSS / OSV — cite these ids too when used):
+{live_intel}
+
 Rules:
 - If Log4Shell / JNDI / CVE-2021-44228 is indicated, say so explicitly and name the CVE.
 - If SSH brute force + valid-account success is indicated, map T1110 / T1078 / T1021.004.
 - Do not invent CVEs that are not in the retrieved context or extracted ids.
+- When live intel confirms a CVE is in CISA KEV or has a high EPSS score, raise the finding's severity/confidence and say so.
 """
 
 
@@ -74,13 +79,24 @@ def threat_intel_node(state: SecurityState) -> dict:
     prior_text = "\n".join(
         f"- [{f.get('severity')}] {f.get('title')}" for f in prior
     ) or "(none yet)"
+
+    enriched = enrich(
+        cve_ids=cves,
+        iocs=ips,
+        scenario_meta=state.get("scenario_meta") or {},
+    )
+    for line in enriched.trace:
+        emit_trace({"agent": "threat_intel", "phase": "enrich", "message": line})
+
     return run_llm_findings(
         agent="threat_intel",
         prompt=PROMPT,
         started=started,
         retrieved=retrieved,
+        extra_allowed_ids=enriched.allowed_ids,
         scenario_id=state.get("scenario_id", ""),
         iocs=ioc_text,
         prior=prior_text,
         context=format_retrieved(retrieved),
+        live_intel=enriched.context_block,
     )

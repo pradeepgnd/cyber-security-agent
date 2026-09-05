@@ -3,6 +3,7 @@ from __future__ import annotations
 import time
 
 from src.agents.common import emit_trace, run_llm_findings
+from src.live.enrich import enrich
 from src.rag.retrievers import format_retrieved, retrieve
 from src.state import SecurityState
 from src.tools.cve_match import hits_as_text, match_cves
@@ -24,10 +25,15 @@ Deterministic CVE matches:
 Retrieved CVE context:
 {context}
 
+Live intel (OSV / NVD / CISA KEV / EPSS — cite these ids too when used):
+{live_intel}
+
 Rules:
 - If a match names CVE-2021-44228 / log4j-core, that finding MUST appear.
 - If there are no packages or no matches, emit at most one info finding saying so.
 - recommended_action should name the fixed version when known.
+- Prefer the fixed version from OSV live intel when it disagrees with the local KB, and note the discrepancy.
+- If live intel shows a CVE is in CISA KEV, mark that finding at least high severity.
 """
 
 
@@ -54,13 +60,24 @@ def vuln_scanner_node(state: SecurityState) -> dict:
             "retrieved_ids": [cid for _, cid, _ in retrieved],
         }
     )
+
+    enriched = enrich(
+        cve_ids=[h.cve_id for h in hits],
+        packages=packages,
+        scenario_meta=state.get("scenario_meta") or {},
+    )
+    for line in enriched.trace:
+        emit_trace({"agent": "vuln_scanner", "phase": "enrich", "message": line})
+
     return run_llm_findings(
         agent="vuln_scanner",
         prompt=PROMPT,
         started=started,
         retrieved=retrieved,
+        extra_allowed_ids=enriched.allowed_ids,
         scenario_id=state.get("scenario_id", ""),
         packages=packages_as_text(packages),
         hits=hits_as_text(hits),
         context=format_retrieved(retrieved),
+        live_intel=enriched.context_block,
     )

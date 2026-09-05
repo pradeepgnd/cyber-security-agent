@@ -73,7 +73,20 @@ def collection_stats() -> dict[str, int]:
 
 
 def resolve_chunk(chunk_id: str) -> str | None:
-    """Return stored document text for a citation id, or None if unknown."""
+    """Return stored document text for a citation id, or None if unknown.
+
+    Also resolves live-enrichment citation ids (``nvd:…``, ``kev:…``, ``epss:…``,
+    ``osv:…``) via the live cache / committed fixtures.
+    """
+    if ":" in chunk_id:
+        try:
+            from src.live.cache import resolve_live
+
+            live = resolve_live(chunk_id)
+        except Exception:  # noqa: BLE001
+            live = None
+        if live:
+            return live
     for name in COLLECTIONS:
         col = get_collection(name)
         try:

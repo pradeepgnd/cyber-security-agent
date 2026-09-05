@@ -109,6 +109,7 @@ def run_llm_findings(
     schema: type[BaseModel] = FindingBatch,
     started: float,
     retrieved: list[tuple[str, str, float]],
+    extra_allowed_ids: set[str] | None = None,
     **variables: object,
 ) -> dict:
     emit_trace({"agent": agent, "phase": "llm", "message": "Calling model for findings"})
@@ -121,7 +122,7 @@ def run_llm_findings(
     findings_raw = getattr(batch, "findings", None)
     if findings_raw is None:
         return failed_step(agent, started, "model returned no findings field")
-    allowed = allowed_citation_ids(retrieved)
+    allowed = allowed_citation_ids(retrieved) | (extra_allowed_ids or set())
     findings = sanitize_findings(list(findings_raw), agent=agent, allowed_ids=allowed)
     ids = [cid for _, cid, _ in retrieved]
     summary = f"{len(findings)} finding(s); retrieved {len(ids)} chunk(s)"

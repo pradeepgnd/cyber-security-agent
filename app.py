@@ -43,6 +43,52 @@ def _render_chips(placeholder, statuses: dict[str, str]) -> None:
         col.markdown(_chip_html(name, statuses.get(name, "idle")), unsafe_allow_html=True)
 
 
+def _live_badges(citations: list[str]) -> list[str]:
+    """Provenance chips for a finding's live citations (NVD / KEV / EPSS / OSV)."""
+    try:
+        from src.live.cache import load_live_record
+    except Exception:  # noqa: BLE001
+        return []
+    out: list[str] = []
+    seen: set[str] = set()
+    for cid in citations or []:
+        if ":" not in cid or cid in seen:
+            continue
+        seen.add(cid)
+        rec = load_live_record(cid)
+        if not rec:
+            continue
+        src = rec.get("source", "")
+        data = rec.get("data") or {}
+        if src == "kev":
+            out.append("🔴 CISA KEV — known-exploited")
+        elif src == "nvd":
+            score = data.get("cvss_score")
+            sev = (rec.get("severity") or "").upper()
+            out.append(f"NVD CVSS {score} {sev}".strip() if score is not None else f"NVD {sev}".strip())
+        elif src == "epss":
+            epss, pct = data.get("epss"), data.get("percentile")
+            if epss is not None:
+                label = f"EPSS {float(epss):.3f}"
+                if pct is not None:
+                    label += f" · p{float(pct) * 100:.0f}"
+                out.append(label)
+        elif src == "osv":
+            out.append(f"OSV {cid.split(':', 1)[1]}")
+    return out
+
+
+def _render_badges(badges: list[str]) -> None:
+    if not badges:
+        return
+    spans = " ".join(
+        '<span style="background:#eef2ff;color:#3730a3;border-radius:6px;'
+        f'padding:2px 8px;margin-right:6px;font-size:0.8rem;">{b}</span>'
+        for b in badges
+    )
+    st.markdown(spans, unsafe_allow_html=True)
+
+
 def _finalize_statuses(statuses: dict[str, str], visited: list[str]) -> dict[str, str]:
     out = dict(statuses)
     for name in AGENT_NAMES:
@@ -74,6 +120,7 @@ def _tabs(findings: list[dict], plan: str, raw_logs: dict[str, str], risk_score)
                     "agent": f.get("agent"),
                     "title": f.get("title"),
                     "confidence": f.get("confidence"),
+                    "live": sum(1 for c in f.get("citations") or [] if ":" in c),
                     "citations": ", ".join(f.get("citations") or []),
                 }
                 for f in findings
@@ -82,6 +129,7 @@ def _tabs(findings: list[dict], plan: str, raw_logs: dict[str, str], risk_score)
             for f in findings:
                 with st.expander(f"[{f.get('severity')}] {f.get('title')}"):
                     st.write(f.get("description") or "")
+                    _render_badges(_live_badges(f.get("citations") or []))
                     if f.get("recommended_action"):
                         st.markdown(f"**Action:** {f['recommended_action']}")
                     if f.get("evidence"):
@@ -261,6 +309,30 @@ with st.sidebar:
         st.table([{"collection": k, "chunks": v} for k, v in stats.items()])
     except Exception as exc:  # noqa: BLE001
         st.warning(f"Index not built yet ({exc}). Click Rebuild knowledge base.")
+
+    st.markdown("**Live intel cache**")
+    try:
+        from src.config import CACHE_MODE, LIVE_SOURCES
+        from src.live import cache as _live_cache
+
+        st.caption(f"mode: `{CACHE_MODE}`  ·  frozen = never calls the network")
+        st.table(
+            [
+                {
+                    "source": name,
+                    "cached": len(list((_live_cache.LIVE_CACHE_DIR / name).glob("*.json")))
+                    if (_live_cache.LIVE_CACHE_DIR / name).exists()
+                    else 0,
+                    "frozen": len(list((_live_cache.LIVE_FIXTURES_DIR / name).glob("*.json")))
+                    if (_live_cache.LIVE_FIXTURES_DIR / name).exists()
+                    else 0,
+                }
+                for name in LIVE_SOURCES
+            ]
+        )
+    except Exception as exc:  # noqa: BLE001
+        st.caption(f"live cache unavailable ({exc})")
+
     ignore_cache = st.checkbox("Ignore disk cache", value=False)
     run_clicked = st.button("Run analysis", type="primary", disabled=not scenario_id)
 
