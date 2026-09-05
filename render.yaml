@@ -1,11 +1,14 @@
 # Render Blueprint — https://render.com/docs/blueprint-spec
-# Secrets (OPENROUTER_API_KEY, OPENROUTER_MODEL) are set in the dashboard
-# or via the Render CLI from local .env — never committed.
+# Live: https://cyber-security-agent.onrender.com
+# Repo branch: phase3. Secrets stay in the dashboard / CLI — never commit .env.
+# Free plan: no disk; start.sh rebuilds data/chroma on a cold start.
 services:
   - type: web
     name: cyber-security-agent
     runtime: python
     plan: free
+    repo: https://github.com/pradeepgnd/cyber-security-agent
+    branch: phase3
     buildCommand: pip install -r requirements.txt
     startCommand: bash scripts/start.sh
     healthCheckPath: /_stcore/health

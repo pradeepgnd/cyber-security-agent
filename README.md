@@ -109,19 +109,17 @@ redirects the cache to a tmp dir).
 
 ## Deploy on Render
 
-The app is a long-running Streamlit process. Render is configured via [`render.yaml`](render.yaml). The Blueprint uses the **Free** plan (no persistent disk — Chroma rebuilds on each cold start). Add a payment method and switch to Starter + a `/data` disk if you need the index and run cache to survive deploys.
+Live app: https://cyber-security-agent.onrender.com  
+Service dashboard: https://dashboard.render.com/web/srv-dae7t11t0dsc7395svhg
 
-1. Push this repo to GitHub and open [Render Blueprints](https://dashboard.render.com/blueprints).
-2. Connect the GitHub repo. Render prompts for `OPENROUTER_API_KEY` and `OPENROUTER_MODEL` — paste the same values as local `.env`. Do not commit `.env`.
-3. First boot runs `scripts/start.sh`, which builds the knowledge base if `/data/chroma` is empty, then binds Streamlit to `$PORT`.
-4. Later deploys skip ingest. Re-demos hit the disk run cache.
+The Blueprint is [`render.yaml`](render.yaml) on branch `phase3`. The service is **Free** (no persistent disk). `scripts/start.sh` builds Chroma under `data/chroma` when that directory is empty, then binds Streamlit to `$PORT`. After a spin-down, the next wake rebuilds the index (~2 minutes).
 
-Free-tier web services cannot attach a disk and spin down when idle — every wake rebuilds Chroma. Starter is the demo-safe plan. If a live run is killed with OOM, bump the instance to Standard (2 GB).
+To recreate or apply the Blueprint:
 
-```bash
-# after the service exists, refresh secrets from local .env (never print them)
-render env set OPENROUTER_API_KEY --value "$OPENROUTER_API_KEY"
-```
+1. Push this repo and open [Render Blueprints](https://dashboard.render.com/blueprints).
+2. Connect `pradeepgnd/cyber-security-agent`. Render prompts for `OPENROUTER_API_KEY` and `OPENROUTER_MODEL` — use the same values as local `.env`. Do not commit `.env`.
+
+Add a payment method and switch to Starter + a `/data` disk if you need the index and run cache to survive deploys. If a live run is killed with OOM, bump the instance to Standard (2 GB).
 
 ## Layout
 
