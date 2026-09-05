@@ -1,0 +1,10 @@
+{
+  "id": "ssh_bruteforce",
+  "title": "SSH brute force to lateral movement",
+  "summary": "External IP 185.220.101.47 guessed passwords against sshd, then logged in as ubuntu, created backup-svc, and hopped to 10.0.2.15.",
+  "max_iterations": 8,
+  "max_visits_per_agent": 1,
+  "required_agents": ["log_monitor", "threat_intel", "policy_checker", "incident_response"],
+  "terminal_agent": "incident_response",
+  "expected_keywords": ["brute", "185.220.101.47", "T1110", "ubuntu", "contain"]
+}

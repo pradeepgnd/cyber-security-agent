@@ -216,3 +216,7 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Local knowledge-base index and demo run cache
+data/chroma/
+data/cache/
