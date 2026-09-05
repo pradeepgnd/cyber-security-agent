@@ -2,16 +2,30 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
+import re
 from datetime import datetime, timezone
 from pathlib import Path
 
 from src.config import CACHE_DIR
 
+_SAFE_KEY_RE = re.compile(r"^[A-Za-z0-9._-]{1,100}$")
+
+
+def _safe_key(key: str) -> str:
+    if _SAFE_KEY_RE.match(key):
+        return key
+    return hashlib.sha1(key.encode("utf-8")).hexdigest()
+
 
 def cache_path(scenario_id: str) -> Path:
     CACHE_DIR.mkdir(parents=True, exist_ok=True)
-    return CACHE_DIR / f"{scenario_id}.json"
+    root = CACHE_DIR.resolve()
+    path = (CACHE_DIR / f"{_safe_key(scenario_id)}.json").resolve()
+    if path.parent != root:
+        path = (CACHE_DIR / f"{hashlib.sha1(scenario_id.encode('utf-8')).hexdigest()}.json").resolve()
+    return path
 
 
 def load_run(scenario_id: str) -> dict | None:

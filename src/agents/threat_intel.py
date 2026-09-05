@@ -3,7 +3,7 @@ from __future__ import annotations
 import re
 import time
 
-from src.agents.common import emit_trace, run_llm_findings
+from src.agents.common import emit_trace, run_llm_findings, skip_llm
 from src.live.enrich import enrich
 from src.rag.retrievers import format_retrieved, retrieve_many
 from src.state import SecurityState
@@ -61,6 +61,12 @@ def threat_intel_node(state: SecurityState) -> dict:
             "message": f"Extracted {len(cves)} CVE id(s), {len(ips)} IP IOC(s)",
         }
     )
+    if not prior and not cves and not ips:
+        return skip_llm(
+            "threat_intel",
+            started,
+            "No prior findings or IOCs — skipping LLM",
+        )
     if cves or "jndi" in blob.lower() or "log4" in blob.lower():
         cve_q = "log4j jndi rce CVE-2021-44228"
         mitre_q = "T1190 exploit public-facing application rce"

@@ -1,0 +1,63 @@
+{
+  "cve_id": "CVE-2023-30861",
+  "data": {
+    "affected": [
+      {
+        "package": "flask",
+        "ranges": [
+          {
+            "events": [
+              {
+                "introduced": "0"
+              },
+              {
+                "fixed": "70f906c51ce49c485f1d355703e9cc3386b1cc2b"
+              },
+              {
+                "fixed": "afd63b16170b7c047f5758eb910c416511e9c965"
+              }
+            ],
+            "repo": "https://github.com/pallets/flask",
+            "type": "GIT"
+          },
+          {
+            "events": [
+              {
+                "introduced": "0"
+              },
+              {
+                "fixed": "2.2.5"
+              },
+              {
+                "introduced": "2.3.0"
+              },
+              {
+                "fixed": "2.3.2"
+              }
+            ],
+            "type": "ECOSYSTEM"
+          }
+        ]
+      }
+    ],
+    "aliases": [
+      "CVE-2023-30861",
+      "GHSA-m2qf-hxjv-5gpq"
+    ]
+  },
+  "fetched_at": "2026-09-05T18:16:34+00:00",
+  "id": "osv:PYSEC-2023-62",
+  "kind": "advisory",
+  "refs": [
+    "https://github.com/pallets/flask/commit/70f906c51ce49c485f1d355703e9cc3386b1cc2b",
+    "https://github.com/pallets/flask/releases/tag/2.3.2",
+    "https://github.com/pallets/flask/releases/tag/2.2.5",
+    "https://github.com/pallets/flask/security/advisories/GHSA-m2qf-hxjv-5gpq",
+    "https://github.com/pallets/flask/commit/afd63b16170b7c047f5758eb910c416511e9c965"
+  ],
+  "severity": "",
+  "source": "osv",
+  "summary": "Flask is a lightweight WSGI web application framework. When all of the following conditions are met, a response containing data intended for one client may be cached and subsequently sent by the proxy to other clients. If the proxy also caches `Set-Cookie` headers, it may send one client's `session` cookie to other clients. The severity depends on the application's use of the session and the proxy's behavior regarding cookies. The risk depends on all these conditions being met.\n\n1. The application must be hosted behind a caching proxy that does not strip cookies or ignore responses with cookie",
+  "title": "PYSEC-2023-62 \u2014 OSV advisory",
+  "url": "https://osv.dev/vulnerability/PYSEC-2023-62"
+}

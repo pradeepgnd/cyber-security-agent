@@ -141,3 +141,9 @@ def run_llm_findings(
     if hasattr(batch, "risk_score"):
         extra["risk_score"] = float(batch.risk_score)
     return done_update(agent, started, findings, ids, summary, extra or None)
+
+
+def skip_llm(agent: str, started: float, message: str) -> dict:
+    """Complete a specialist with no findings and no model call."""
+    emit_trace({"agent": agent, "phase": "skip", "message": message})
+    return done_update(agent, started, [], [], message)

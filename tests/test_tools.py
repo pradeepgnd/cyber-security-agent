@@ -60,3 +60,59 @@ def test_depscan_and_cve_match_log4j() -> None:
     ]
     hits = match_cves(pkgs, records)
     assert any(h.cve_id == "CVE-2021-44228" for h in hits)
+
+
+def test_parse_logs_fallback_on_unknown_filename() -> None:
+    fails = "\n".join(
+        f"Jan 15 03:12:{i:02d} web-prod sshd[{1400+i}]: Failed password for root from 185.220.101.47 port {53000+i} ssh2"
+        for i in range(10)
+    )
+    kinds = {e.kind for e in parse_logs({"mylog.txt": fails})}
+    assert "brute_force" in kinds
+
+
+def test_benign_logs_have_no_suspicious_events() -> None:
+    from pathlib import Path
+
+    root = Path("data/scenarios/benign")
+    events = parse_logs(
+        {
+            "auth.log": (root / "auth.log").read_text(encoding="utf-8"),
+            "nginx_access.log": (root / "nginx_access.log").read_text(encoding="utf-8"),
+        }
+    )
+    kinds = {e.kind for e in events}
+    assert not kinds.intersection(
+        {
+            "brute_force",
+            "success_after_failures",
+            "jndi_exploit",
+            "jndi_lookup",
+            "path_traversal",
+            "account_create",
+            "lateral_movement",
+        }
+    )
+
+
+def test_clean_txt_upload_name_is_also_quiet() -> None:
+    from pathlib import Path
+
+    text = Path("sample_data/clean.txt").read_text(encoding="utf-8")
+    kinds = {e.kind for e in parse_logs({"clean.txt": text})}
+    assert "brute_force" not in kinds
+    assert "jndi_exploit" not in kinds
+
+
+def test_log_monitor_skips_model_on_clean_parse() -> None:
+    from src.agents.log_monitor import log_monitor_node
+
+    out = log_monitor_node(
+        {
+            "raw_logs": {"auth.log": "Jan 15 08:02:44 api-prod sshd[2044]: Accepted publickey for deploy from 198.51.100.10 port 60321 ssh2\n"},
+            "scenario_id": "benign",
+        }
+    )
+    assert out["findings"] == []
+    assert out["visited"] == ["log_monitor"]
+    assert out["agent_log"][0]["status"] == "done"

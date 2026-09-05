@@ -122,12 +122,14 @@ def supervisor_node(state: SecurityState) -> dict:
         return finish("Terminal agent already ran — finishing.", "FINISH")
 
     if iterations >= policy.max_iterations:
-        if policy.terminal_agent not in visited:
+        if policy.terminal_agent not in visited and findings:
             return finish(
                 f"Hit max_iterations={policy.max_iterations}; forcing {policy.terminal_agent}.",
                 policy.terminal_agent,
             )
-        return finish("Hit max_iterations and terminal agent ran — finishing.", "FINISH")
+        if policy.terminal_agent in visited:
+            return finish("Hit max_iterations and terminal agent ran — finishing.", "FINISH")
+        return finish("Hit max_iterations with no findings — finishing.", "FINISH")
 
     legal = _legal_choices(state, policy)
     if not legal:

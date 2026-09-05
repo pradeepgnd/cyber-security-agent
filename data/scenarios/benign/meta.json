@@ -1,0 +1,10 @@
+{
+  "id": "benign",
+  "title": "Clean control traffic",
+  "summary": "Routine SSH public-key logins and healthy HTTP traffic. Isolated failed logins stay under the brute-force threshold. No exploit payloads, no account creation, no vulnerable manifests.",
+  "max_iterations": 8,
+  "max_visits_per_agent": 1,
+  "terminal_agent": "incident_response",
+  "expect_clean": true,
+  "expected_keywords": []
+}

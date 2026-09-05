@@ -55,11 +55,20 @@ def parse_logs(raw_logs: dict[str, str]) -> list[ParsedEvent]:
 
     for name, text in raw_logs.items():
         lower = name.lower()
+        matched = False
         if "auth" in lower or lower == "syslog" or "secure" in lower:
             events.extend(_parse_auth(name, text, failed_by_ip, failed_users, accepted))
+            matched = True
         if "nginx" in lower or "access" in lower:
             events.extend(_parse_nginx(name, text))
+            matched = True
         if "app" in lower or lower.endswith(".log"):
+            events.extend(_parse_app(name, text))
+            matched = True
+        if not matched:
+            # Uploaded names like mylog.txt / messages.txt: try every parser.
+            events.extend(_parse_auth(name, text, failed_by_ip, failed_users, accepted))
+            events.extend(_parse_nginx(name, text))
             events.extend(_parse_app(name, text))
 
     for ip, lines in failed_by_ip.items():

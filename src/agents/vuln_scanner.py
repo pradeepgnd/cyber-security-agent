@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import time
 
-from src.agents.common import emit_trace, run_llm_findings
+from src.agents.common import emit_trace, run_llm_findings, skip_llm
 from src.live.enrich import enrich
 from src.rag.retrievers import format_retrieved, retrieve
 from src.state import SecurityState
@@ -48,6 +48,12 @@ def vuln_scanner_node(state: SecurityState) -> dict:
             "message": f"Scanned {len(packages)} package(s), {len(hits)} CVE match(es)",
         }
     )
+    if not packages and not hits:
+        return skip_llm(
+            "vuln_scanner",
+            started,
+            "No packages or CVE matches — skipping LLM",
+        )
     query = " ".join(h.cve_id for h in hits) or " ".join(p.name for p in packages) or "vulnerability"
     if any("log4" in p.name.lower() for p in packages) or any("44228" in h.cve_id for h in hits):
         query = "log4j jndi rce CVE-2021-44228"

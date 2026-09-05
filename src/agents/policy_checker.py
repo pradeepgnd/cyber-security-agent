@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import time
 
-from src.agents.common import emit_trace, run_llm_findings
+from src.agents.common import emit_trace, run_llm_findings, skip_llm
 from src.rag.retrievers import format_retrieved, retrieve
 from src.state import SecurityState
 
@@ -50,6 +50,12 @@ def policy_checker_node(state: SecurityState) -> dict:
             "message": f"Collected {len(findings)} prior finding(s) for control mapping",
         }
     )
+    if not findings:
+        return skip_llm(
+            "policy_checker",
+            started,
+            "No findings to map — skipping LLM",
+        )
     blob = cats.lower()
     if "log4" in blob or "jndi" in blob or "44228" in blob:
         query = "RA-5 vulnerability monitoring CM-6 configuration SI-4 system monitoring CC7"

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import time
 
-from src.agents.common import emit_trace, run_llm_findings
+from src.agents.common import emit_trace, run_llm_findings, skip_llm
 from src.rag.retrievers import format_retrieved, retrieve
 from src.state import SecurityState
 from src.tools.log_parse import events_as_text, parse_logs
@@ -38,6 +38,12 @@ def log_monitor_node(state: SecurityState) -> dict:
             "message": f"Parsed logs — {len(events)} suspicious event group(s)",
         }
     )
+    if not events:
+        return skip_llm(
+            "log_monitor",
+            started,
+            "No suspicious events — skipping LLM",
+        )
     query = events_as_text(events)
     if "jndi" in query.lower() or "log4" in query.lower():
         q = "jndi ldap rce log4shell public-facing exploit detection"

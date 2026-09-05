@@ -19,10 +19,10 @@ def smoke() -> int:
     reset_client()
     cve = retrieve("cve", "log4j jndi rce", k=3)
     det = retrieve("detections", "repeated failed password", k=3)
-    print("\nSmoke — cve ← 'log4j jndi rce'")
+    print("\nSmoke - cve <- 'log4j jndi rce'")
     for text, cid, score in cve:
         print(f"  {cid:30s}  score={score:.3f}  {text.splitlines()[0][:60]}")
-    print("Smoke — detections ← 'repeated failed password'")
+    print("Smoke - detections <- 'repeated failed password'")
     for text, cid, score in det:
         print(f"  {cid:30s}  score={score:.3f}  {text.splitlines()[0][:60]}")
 
@@ -50,7 +50,7 @@ def main() -> int:
     parser.add_argument("--no-wipe", action="store_true", help="do not delete existing collections")
     args = parser.parse_args()
 
-    print("Rebuilding Chroma collections…")
+    print("Rebuilding Chroma collections...")
     stats = rebuild_collections(wipe=not args.no_wipe)
     reset_client()
     print(f"{'collection':<14} {'docs':>6} {'chunks':>8}")

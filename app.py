@@ -16,7 +16,13 @@ from src.config import AGENT_LABELS, AGENT_NAMES, LANGSMITH_PROJECT, LANGSMITH_T
 from src.graph import build_graph, initial_state, run_config
 from src.rag.ingest import rebuild_collections
 from src.rag.retrievers import collection_stats, reset_client, resolve_chunk
-from src.scenarios import list_scenarios, load_scenario
+from src.scenarios import (
+    UploadError,
+    classify_file,
+    list_scenarios,
+    load_scenario,
+    load_uploaded,
+)
 
 CHIP_COLORS = {
     "idle": "#6b7280",
@@ -103,10 +109,22 @@ def _finalize_statuses(statuses: dict[str, str], visited: list[str]) -> dict[str
 def render_cached(result: dict) -> None:
     findings = result.get("findings") or []
     plan = result.get("final_plan") or "_No plan cached._"
-    _tabs(findings, plan, result.get("raw_logs") or {}, result.get("risk_score"))
+    _tabs(
+        findings,
+        plan,
+        result.get("raw_logs") or {},
+        result.get("risk_score"),
+        result.get("artifacts") or {},
+    )
 
 
-def _tabs(findings: list[dict], plan: str, raw_logs: dict[str, str], risk_score) -> None:
+def _tabs(
+    findings: list[dict],
+    plan: str,
+    raw_logs: dict[str, str],
+    risk_score,
+    artifacts: dict[str, str] | None = None,
+) -> None:
     findings_tab, plan_tab, compliance_tab, logs_tab = st.tabs(
         ["Findings", "Response Plan", "Compliance", "Raw logs"]
     )
@@ -162,16 +180,21 @@ def _tabs(findings: list[dict], plan: str, raw_logs: dict[str, str], risk_score)
                 hide_index=True,
             )
     with logs_tab:
-        if not raw_logs:
+        if not raw_logs and not artifacts:
             st.info("No logs on this run.")
         for name, text in raw_logs.items():
             with st.expander(name, expanded=False):
                 st.code(text[:8000], language="text")
+        for name, text in (artifacts or {}).items():
+            with st.expander(f"{name} (artifact)", expanded=False):
+                st.code(text[:8000], language="text")
 
 
-def run_live(scenario_id: str, chip_box, trace_box, plan_box) -> dict:
-    loaded = load_scenario(scenario_id)
-    state = initial_state(scenario_id, loaded["raw_logs"], loaded["artifacts"], loaded["meta"])
+def run_live(bundle: dict, chip_box, trace_box, plan_box) -> dict:
+    scenario_id = bundle["scenario_id"]
+    state = initial_state(
+        scenario_id, bundle["raw_logs"], bundle["artifacts"], bundle["meta"]
+    )
     graph = build_graph()
     statuses = {name: "idle" for name in AGENT_NAMES}
     _render_chips(chip_box, statuses)
@@ -187,7 +210,8 @@ def run_live(scenario_id: str, chip_box, trace_box, plan_box) -> dict:
         "visited": [],
         "final_plan": "",
         "risk_score": 0,
-        "raw_logs": loaded["raw_logs"],
+        "raw_logs": bundle["raw_logs"],
+        "artifacts": bundle.get("artifacts") or {},
         "scenario_id": scenario_id,
         "model": OPENROUTER_MODEL,
     }
@@ -291,8 +315,38 @@ st.caption("Supervisor + 5 specialists · local RAG · citations on every findin
 
 with st.sidebar:
     st.subheader("Run")
-    scenarios = list_scenarios()
-    scenario_id = st.selectbox("Scenario", scenarios, index=0 if scenarios else None)
+    input_mode = st.radio("Input", ["Bundled scenario", "Upload files"])
+    bundle: dict | None = None
+    upload_error: str | None = None
+
+    if input_mode == "Bundled scenario":
+        scenarios = list_scenarios()
+        scenario_choice = st.selectbox(
+            "Scenario", scenarios, index=0 if scenarios else None
+        )
+        if scenario_choice:
+            bundle = load_scenario(scenario_choice)
+    else:
+        uploaded = st.file_uploader(
+            "Text logs and manifests",
+            accept_multiple_files=True,
+            help="Up to 10 files, 2 MB each. Manifests (requirements, Dockerfiles, …) "
+            "are artifacts; everything else is treated as a log.",
+        )
+        if uploaded:
+            try:
+                bundle = load_uploaded(uploaded)
+                st.caption(f"Run id: `{bundle['scenario_id']}`")
+                st.table(
+                    [
+                        {"file": f.name, "kind": classify_file(f.name)}
+                        for f in uploaded
+                    ]
+                )
+            except UploadError as exc:
+                upload_error = str(exc)
+                st.error(upload_error)
+
     st.markdown(f"**Model:** `{OPENROUTER_MODEL}`")
     st.markdown(
         f"**LangSmith:** {'on · ' + LANGSMITH_PROJECT if LANGSMITH_TRACING else 'off'}"
@@ -334,7 +388,7 @@ with st.sidebar:
         st.caption(f"live cache unavailable ({exc})")
 
     ignore_cache = st.checkbox("Ignore disk cache", value=False)
-    run_clicked = st.button("Run analysis", type="primary", disabled=not scenario_id)
+    run_clicked = st.button("Run analysis", type="primary", disabled=bundle is None)
 
 chip_box = st.container()
 _render_chips(chip_box, {n: "idle" for n in AGENT_NAMES})
@@ -345,30 +399,39 @@ plan_box = st.empty()
 if "results" not in st.session_state:
     st.session_state.results = {}
 
-if scenario_id and not run_clicked and scenario_id in st.session_state.results:
-    result = st.session_state.results[scenario_id]
+run_id = bundle["scenario_id"] if bundle else None
+
+
+def _fill_from_bundle(result: dict, src: dict) -> dict:
+    result.setdefault("raw_logs", src["raw_logs"])
+    result.setdefault("artifacts", src.get("artifacts") or {})
+    return result
+
+
+if run_id and not run_clicked and run_id in st.session_state.results:
+    result = st.session_state.results[run_id]
     plan_box.markdown(result.get("final_plan") or "")
     render_cached(result)
-elif scenario_id and not run_clicked and not ignore_cache:
-    cached = load_run(scenario_id)
+elif run_id and bundle and not run_clicked and not ignore_cache:
+    cached = load_run(run_id)
     if cached:
-        cached.setdefault("raw_logs", load_scenario(scenario_id)["raw_logs"])
-        st.session_state.results[scenario_id] = cached
+        _fill_from_bundle(cached, bundle)
+        st.session_state.results[run_id] = cached
         plan_box.markdown(cached.get("final_plan") or "")
         st.info("Showing cached run. Tick “Ignore disk cache” and re-run for a live trace.")
         render_cached(cached)
 
-if run_clicked and scenario_id:
+if run_clicked and bundle and run_id:
     if not ignore_cache:
-        cached = load_run(scenario_id)
+        cached = load_run(run_id)
         if cached:
-            cached.setdefault("raw_logs", load_scenario(scenario_id)["raw_logs"])
-            st.session_state.results[scenario_id] = cached
+            _fill_from_bundle(cached, bundle)
+            st.session_state.results[run_id] = cached
             plan_box.markdown(cached.get("final_plan") or "")
             st.info("Loaded from disk cache.")
             render_cached(cached)
             st.stop()
-    result = run_live(scenario_id, chip_box, trace_box, plan_box)
-    result.setdefault("raw_logs", load_scenario(scenario_id)["raw_logs"])
-    st.session_state.results[scenario_id] = result
+    result = run_live(bundle, chip_box, trace_box, plan_box)
+    _fill_from_bundle(result, bundle)
+    st.session_state.results[run_id] = result
     render_cached(result)

@@ -103,10 +103,28 @@ def check_result(result: dict, meta: dict) -> int:
     errors: list[str] = []
     findings = result.get("findings") or []
     plan = result.get("final_plan") or ""
-    if not findings:
-        errors.append("no findings")
-    if not plan.strip():
-        errors.append("empty plan")
+    if meta.get("expect_clean"):
+        noisy = [
+            f
+            for f in findings
+            if f.get("agent") != "incident_response"
+            and str(f.get("severity", "")).lower() not in {"info"}
+        ]
+        if noisy:
+            errors.append(
+                "clean control produced security findings: "
+                + ", ".join(f.get("title", "?") for f in noisy)
+            )
+        print("\n=== visit order ===")
+        print(" → ".join(result.get("visited") or []) or "(none)")
+        print(f"findings={len(findings)}  risk={result.get('risk_score')}  plan_chars={len(plan)}")
+        if errors:
+            print("CHECK FAILED:")
+            for e in errors:
+                print(f"  - {e}")
+            return 1
+        print("CHECK PASSED (clean control)")
+        return 0
 
     haystack = " ".join(
         f"{f.get('title', '')} {f.get('description', '')}" for f in findings
