@@ -109,7 +109,7 @@ redirects the cache to a tmp dir).
 
 ## Deploy on Render
 
-The app is a long-running Streamlit process. Render is configured via [`render.yaml`](render.yaml) (Starter plan + 1 GB disk at `/data` so Chroma and the run cache survive deploys).
+The app is a long-running Streamlit process. Render is configured via [`render.yaml`](render.yaml). The Blueprint uses the **Free** plan (no persistent disk — Chroma rebuilds on each cold start). Add a payment method and switch to Starter + a `/data` disk if you need the index and run cache to survive deploys.
 
 1. Push this repo to GitHub and open [Render Blueprints](https://dashboard.render.com/blueprints).
 2. Connect the GitHub repo. Render prompts for `OPENROUTER_API_KEY` and `OPENROUTER_MODEL` — paste the same values as local `.env`. Do not commit `.env`.

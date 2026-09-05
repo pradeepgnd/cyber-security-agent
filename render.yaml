@@ -5,25 +5,15 @@ services:
   - type: web
     name: cyber-security-agent
     runtime: python
-    plan: starter
+    plan: free
     buildCommand: pip install -r requirements.txt
     startCommand: bash scripts/start.sh
     healthCheckPath: /_stcore/health
-    disk:
-      name: soc-data
-      mountPath: /data
-      sizeGB: 1
     envVars:
       - key: PYTHON_VERSION
         value: "3.12.14"
       - key: CACHE_MODE
         value: frozen
-      - key: CHROMA_DIR
-        value: /data/chroma
-      - key: CACHE_DIR
-        value: /data/cache
-      - key: XDG_CACHE_HOME
-        value: /data/.cache
       - key: USE_NATIVE_STRUCTURED_OUTPUT
         value: "false"
       - key: SUPERVISOR_MAX_ITERATIONS
