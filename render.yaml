@@ -1,6 +1,6 @@
 # Render Blueprint — https://render.com/docs/blueprint-spec
 # Live: https://cyber-security-agent.onrender.com
-# Repo branch: phase3. Secrets stay in the dashboard / CLI — never commit .env.
+# Repo branch: main. Secrets stay in the dashboard / CLI — never commit .env.
 # Free plan: no disk; start.sh rebuilds data/chroma on a cold start.
 services:
   - type: web
@@ -8,7 +8,7 @@ services:
     runtime: python
     plan: free
     repo: https://github.com/pradeepgnd/cyber-security-agent
-    branch: phase3
+    branch: main
     buildCommand: pip install -r requirements.txt
     startCommand: bash scripts/start.sh
     healthCheckPath: /_stcore/health
@@ -39,3 +39,13 @@ services:
         sync: false
       - key: OPENROUTER_MODEL
         sync: false
+      - key: GITHUB_ENABLED
+        sync: false
+      - key: GITHUB_API_URL
+        value: https://api.github.com
+      - key: GITHUB_REPO
+        sync: false
+      - key: GITHUB_TOKEN
+        sync: false
+      - key: GITHUB_MIN_SEVERITY
+        value: high

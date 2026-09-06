@@ -128,6 +128,16 @@ pytest tests/test_parse_json.py tests/test_tools.py tests/test_routing_policy.py
 The live-enrichment tests never touch the network (`tests/conftest.py` blocks it and
 redirects the cache to a tmp dir).
 
+## Deploy on Render
+
+Live app: https://cyber-security-agent.onrender.com  
+Service dashboard: https://dashboard.render.com/web/srv-dae7t11t0dsc7395svhg
+
+The Blueprint is [`render.yaml`](render.yaml) on `main` (Free plan, no persistent disk).
+`scripts/start.sh` builds Chroma under `data/chroma` when empty, then binds Streamlit to `$PORT`.
+A cold start after spin-down rebuilds the index (~2 minutes). Secrets come from the Render
+dashboard / CLI (same keys as local `.env`) and are never committed.
+
 ## Layout
 
 See `PLAN.md` for architecture and the locked decisions. Application code lives in `src/`, the corpus in `data/kb` and `data/scenarios`, the Streamlit entrypoint is `app.py`.
