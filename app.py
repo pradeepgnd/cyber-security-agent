@@ -9,11 +9,20 @@ ROOT = Path(__file__).resolve().parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+import pandas as pd
 import streamlit as st
 
 from src.cache import load_run, save_run
-from src.config import AGENT_LABELS, AGENT_NAMES, LANGSMITH_PROJECT, LANGSMITH_TRACING, OPENROUTER_MODEL
+from src.config import (
+    AGENT_LABELS,
+    AGENT_NAMES,
+    LANGSMITH_PROJECT,
+    LANGSMITH_TRACING,
+    OPENROUTER_MODEL,
+    SEVERITY_COLORS,
+)
 from src.graph import build_graph, initial_state, run_config
+from src.integrations.github_issues import preview_incident, file_incident, qualifying_findings, text_on
 from src.rag.ingest import rebuild_collections
 from src.rag.retrievers import collection_stats, reset_client, resolve_chunk
 from src.scenarios import (
@@ -31,6 +40,30 @@ CHIP_COLORS = {
     "skipped": "#9ca3af",
     "failed": "#dc2626",
 }
+
+
+def _severity_badge(severity: str) -> str:
+    sev = str(severity or "info").lower()
+    bg = SEVERITY_COLORS.get(sev, SEVERITY_COLORS["info"])
+    fg = text_on(bg)
+    return (
+        f'<span style="background:{bg};color:{fg};border-radius:6px;'
+        f'padding:2px 8px;font-size:0.8rem;font-weight:600;text-transform:uppercase;">'
+        f"{sev}</span>"
+    )
+
+
+def _sev_style(val) -> str:
+    bg = SEVERITY_COLORS.get(str(val).lower(), SEVERITY_COLORS["info"])
+    fg = text_on(bg)
+    return f"background-color: {bg}; color: {fg}"
+
+
+def _severity_frame(rows: list[dict]):
+    df = pd.DataFrame(rows)
+    if df.empty or "severity" not in df.columns:
+        return df
+    return df.style.map(_sev_style, subset=["severity"])
 
 
 def _chip_html(name: str, status: str) -> str:
@@ -116,6 +149,50 @@ def render_cached(result: dict) -> None:
         result.get("risk_score"),
         result.get("artifacts") or {},
     )
+    _github_panel(result)
+
+
+def _github_panel(result: dict) -> None:
+    from src.config import GITHUB_ENABLED, GITHUB_REPO
+
+    st.subheader("File to GitHub")
+    n_child = len(qualifying_findings(result))
+    st.caption(
+        f"about to create 1 parent and {n_child} child issue(s) in `{GITHUB_REPO}`. "
+        "Findings may contain IPs and usernames — do not file into a public repo."
+    )
+    filed = result.get("github") or {}
+    if filed.get("parent"):
+        st.success(
+            f"Already filed parent #{filed['parent']} in {filed.get('repo', GITHUB_REPO)} "
+            f"({len(filed.get('issues') or {})} children). Re-file is a no-op."
+        )
+        return
+    if st.button("File to GitHub"):
+        st.session_state["gh_preview"] = preview_incident(result)
+    preview = st.session_state.get("gh_preview")
+    if not preview:
+        return
+    st.markdown(f"**Parent:** {preview['parent']['title']}")
+    st.markdown(preview["parent"]["body"])
+    for i, child in enumerate(preview.get("children") or [], 1):
+        with st.expander(f"Child {i}: {child['title']}"):
+            st.markdown(child["body"])
+    if not GITHUB_ENABLED:
+        st.button("Post to GitHub", disabled=True)
+        st.warning("GITHUB_ENABLED=false — posting disabled. Set GITHUB_ENABLED=true and GITHUB_TOKEN to post.")
+        return
+    if st.button("Confirm post to GitHub", type="primary"):
+        out = file_incident(result, dry_run=False)
+        if out.get("skipped"):
+            st.info("Already filed.")
+        elif out.get("ok"):
+            st.success(f"Filed parent #{out.get('parent')} in {out.get('repo')}")
+            save_run(str(result.get("scenario_id") or "run"), result)
+        else:
+            st.error(out.get("error") or str(out.get("errors") or "filing failed"))
+            if result.get("github"):
+                save_run(str(result.get("scenario_id") or "run"), result)
 
 
 def _tabs(
@@ -143,9 +220,13 @@ def _tabs(
                 }
                 for f in findings
             ]
-            st.dataframe(rows, use_container_width=True, hide_index=True)
+            st.dataframe(_severity_frame(rows), use_container_width=True, hide_index=True)
             for f in findings:
-                with st.expander(f"[{f.get('severity')}] {f.get('title')}"):
+                st.markdown(
+                    f"{_severity_badge(f.get('severity'))} **{f.get('title')}**",
+                    unsafe_allow_html=True,
+                )
+                with st.expander("Details"):
                     st.write(f.get("description") or "")
                     _render_badges(_live_badges(f.get("citations") or []))
                     if f.get("recommended_action"):
@@ -166,16 +247,18 @@ def _tabs(
             st.info("Policy Checker did not run or produced no control gaps.")
         else:
             st.dataframe(
-                [
-                    {
-                        "control": f.get("title"),
-                        "severity": f.get("severity"),
-                        "gap": f.get("description"),
-                        "action": f.get("recommended_action"),
-                        "citations": ", ".join(f.get("citations") or []),
-                    }
-                    for f in policy
-                ],
+                _severity_frame(
+                    [
+                        {
+                            "control": f.get("title"),
+                            "severity": f.get("severity"),
+                            "gap": f.get("description"),
+                            "action": f.get("recommended_action"),
+                            "citations": ", ".join(f.get("citations") or []),
+                        }
+                        for f in policy
+                    ]
+                ),
                 use_container_width=True,
                 hide_index=True,
             )
