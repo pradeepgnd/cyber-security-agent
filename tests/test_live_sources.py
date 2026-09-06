@@ -3,6 +3,7 @@ from __future__ import annotations
 from src.live.sources import epss, nvd, osv
 from src.live.sources.base import Seeds, cached_fetch
 from src.live.http import LiveHTTPError, LiveNotFound
+import pytest
 from src.live.policy import CachePolicy
 from src.tools.depscan import Package
 
@@ -108,3 +109,80 @@ def test_cached_fetch_error_negative_caches() -> None:
 
     entry = cache.read("nvd", "CVE-Z", 3600)
     assert entry.status == "error"
+
+
+class _Resp:
+    def __init__(self, status: int, *, headers=None, text="", json_data=None):
+        self.status_code = status
+        self.headers = headers or {}
+        self.text = text
+        self._json = json_data
+
+    def json(self):
+        if self._json is None:
+            raise ValueError("no json")
+        return self._json
+
+
+def test_422_raises_immediately_without_retry(monkeypatch) -> None:
+    monkeypatch.setattr("src.live.http.time.sleep", lambda *_a, **_k: None)
+    calls = {"n": 0}
+
+    def req(*_a, **_k):
+        calls["n"] += 1
+        return _Resp(422, text='{"message":"Validation Failed","errors":[{"code":"already_exists"}]}')
+
+    monkeypatch.setattr("src.live.http.requests.request", req)
+    from src.live.http import request_json
+
+    with pytest.raises(LiveHTTPError) as ei:
+        request_json("github", "POST", "https://example.invalid/labels")
+    assert ei.value.status_code == 422
+    assert calls["n"] == 1
+
+
+def test_403_with_retry_after_retries(monkeypatch) -> None:
+    monkeypatch.setattr("src.live.http.time.sleep", lambda *_a, **_k: None)
+    calls = {"n": 0}
+
+    def req(*_a, **_k):
+        calls["n"] += 1
+        if calls["n"] == 1:
+            return _Resp(403, headers={"Retry-After": "0"}, text="rate")
+        return _Resp(200, json_data={"ok": True}, text="{}")
+
+    monkeypatch.setattr("src.live.http.requests.request", req)
+    from src.live.http import request_json
+
+    assert request_json("github", "GET", "https://example.invalid/x") == {"ok": True}
+    assert calls["n"] == 2
+
+
+def test_403_without_rate_limit_raises_immediately(monkeypatch) -> None:
+    monkeypatch.setattr("src.live.http.time.sleep", lambda *_a, **_k: None)
+    calls = {"n": 0}
+
+    def req(*_a, **_k):
+        calls["n"] += 1
+        return _Resp(403, text="bad credentials / missing scope")
+
+    monkeypatch.setattr("src.live.http.requests.request", req)
+    from src.live.http import request_json
+
+    with pytest.raises(LiveHTTPError) as ei:
+        request_json("github", "GET", "https://example.invalid/x")
+    assert ei.value.status_code == 403
+    assert calls["n"] == 1
+
+
+def test_204_allow_empty_returns_dict(monkeypatch) -> None:
+    monkeypatch.setattr("src.live.http.time.sleep", lambda *_a, **_k: None)
+
+    def req(*_a, **_k):
+        return _Resp(204, text="")
+
+    monkeypatch.setattr("src.live.http.requests.request", req)
+    from src.live.http import request_json
+
+    assert request_json("github", "DELETE", "https://example.invalid/x", allow_empty=True) == {}
+

@@ -18,6 +18,7 @@ if str(ROOT) not in sys.path:
 from src.cache import load_run, save_run
 from src.config import AGENT_LABELS, OPENROUTER_MODEL
 from src.graph import build_graph, initial_state, run_config
+from src.integrations.github_issues import file_incident
 from src.rag.retrievers import resolve_chunk
 from src.scenarios import list_scenarios, load_scenario
 
@@ -126,6 +127,11 @@ def check_result(result: dict, meta: dict) -> int:
         print("CHECK PASSED (clean control)")
         return 0
 
+    if not findings:
+        errors.append("no findings")
+    if not plan.strip():
+        errors.append("empty plan")
+
     haystack = " ".join(
         f"{f.get('title', '')} {f.get('description', '')}" for f in findings
     ) + " " + plan
@@ -154,12 +160,34 @@ def check_result(result: dict, meta: dict) -> int:
     return 0
 
 
+def _print_github_preview(preview: dict) -> None:
+    print(f"\n=== GitHub dry run  repo={preview.get('repo')} ===")
+    print(f"would create 1 parent + {preview.get('count', {}).get('children', 0)} child issues")
+    print("\n-- labels --")
+    for lab in preview.get("labels") or []:
+        print(f"  {lab['name']:22s} color={lab['color']}")
+    parent = preview.get("parent") or {}
+    print("\n-- parent --")
+    print(parent.get("title", ""))
+    print(parent.get("body", "")[:2000])
+    for i, child in enumerate(preview.get("children") or [], 1):
+        print(f"\n-- child {i} --")
+        print(child.get("title", ""))
+        print((child.get("body") or "")[:800])
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Run the SOC graph from the terminal")
     parser.add_argument("--scenario", default="ssh_bruteforce", help="scenario id")
     parser.add_argument("--list", action="store_true", help="list scenarios")
     parser.add_argument("--check", action="store_true", help="assert meta.json expected keywords")
     parser.add_argument("--no-cache", action="store_true", help="ignore disk cache")
+    parser.add_argument("--github", action="store_true", help="file the run to GitHub Issues")
+    parser.add_argument(
+        "--github-dry-run",
+        action="store_true",
+        help="print GitHub issue payloads without posting",
+    )
     args = parser.parse_args()
 
     if args.list:
@@ -172,6 +200,23 @@ def main() -> int:
         print(f"[{f.get('severity')}] {f.get('agent')}: {f.get('title')}  cites={f.get('citations')}")
     print("\n=== plan (head) ===")
     print((result.get("final_plan") or "")[:1200])
+
+    if args.github_dry_run or args.github:
+        preview = file_incident(result, dry_run=True)
+        _print_github_preview(preview)
+        if args.github and not args.github_dry_run:
+            out = file_incident(result, dry_run=False)
+            if out.get("skipped"):
+                print("GitHub: already filed — nothing duplicated")
+            elif out.get("ok"):
+                print(f"GitHub: filed parent #{out.get('parent')} in {out.get('repo')}")
+                save_run(args.scenario, result)
+            else:
+                print(f"GitHub: FAILED {out.get('error') or out.get('errors')}")
+                if result.get("github"):
+                    save_run(args.scenario, result)
+                return 1
+
     if args.check:
         meta = load_scenario(args.scenario)["meta"]
         return check_result(result, meta)
